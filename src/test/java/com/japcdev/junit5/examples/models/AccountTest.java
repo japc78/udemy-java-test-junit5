@@ -81,4 +81,49 @@ class AccountTest {
 
         assertEquals(expectedMessege, actualMessage);
     }
+
+    @Test
+    void testTransferMoney() {
+        Account account1 = new Account("User1", new BigDecimal("2500"));
+        Account account2 = new Account("User2", new BigDecimal("1500.12345"));
+        Bank bank = new Bank();
+        bank.transfer(account2, account1, new BigDecimal("500"));
+
+        assertEquals("1000.12345", account2.getBalance().toPlainString());
+        assertEquals("3000", account1.getBalance().toPlainString());
+    }
+
+    @Test
+    void testRelationBankAccount() {
+        Account account1 = new Account("User1", new BigDecimal("2500"));
+        Account account2 = new Account("User2", new BigDecimal("1500.12345"));
+
+        Bank bank = new Bank();
+
+        bank.addAccount(account1);
+        bank.addAccount(account2);
+        bank.setName("Imagic Bank");
+        bank.transfer(account2, account1, new BigDecimal(500));
+
+        assertEquals("1000.12345", account2.getBalance().toPlainString());
+        assertEquals("3000", account1.getBalance().toPlainString());
+
+        assertEquals(2, bank.getAccounts().size());
+        assertEquals("Imagic Bank", account1.getBank().getName());
+
+        // comprobar que el user1 existe en el banco
+        assertEquals("User1", bank.getAccounts().stream()
+                .filter(c -> c.getName().equals("User1"))
+                .findFirst()
+                .get().getName()
+        );
+
+        // Dos formas de hacer la misma comprobacion
+        assertTrue(bank.getAccounts().stream()
+                .filter(c -> c.getName().equals("User1"))
+                .findFirst().isPresent());
+
+        assertTrue(bank.getAccounts().stream()
+                .anyMatch(c -> c.getName().equals("User2")));
+    }
 }

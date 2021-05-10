@@ -25,7 +25,6 @@ public class Bank {
         account.setBank(this);
     }
 
-
     public String getName() {
         return name;
     }
