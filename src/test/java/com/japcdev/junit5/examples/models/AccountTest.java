@@ -71,7 +71,7 @@ class AccountTest {
         Account account = new Account("test", new BigDecimal("500.00"));
 
         // Se comprueba que salta la excepcion cuando no hay suficiente saldo
-        Exception exception = assertThrows(InsufficientBalanceException.class, ()-> {
+        Exception exception = assertThrows(InsufficientBalanceException.class, () -> {
             account.debit(new BigDecimal("600"));
         });
 
@@ -105,25 +105,38 @@ class AccountTest {
         bank.setName("Imagic Bank");
         bank.transfer(account2, account1, new BigDecimal(500));
 
-        assertEquals("1000.12345", account2.getBalance().toPlainString());
-        assertEquals("3000", account1.getBalance().toPlainString());
+        assertAll(
+                () -> {
+                    assertEquals("1000.12345", account2.getBalance().toPlainString());
+                },
+                () -> {
+                    assertEquals("3000", account1.getBalance().toPlainString());
+                },
+                () -> {
+                    assertEquals(2, bank.getAccounts().size());
+                },
+                () -> {
+                    assertEquals("Imagic Bank", account1.getBank().getName());
+                },
+                () -> {
+                    assertEquals("User1", bank.getAccounts().stream()
+                            .filter(c -> c.getName().equals("User1"))
+                            .findFirst()
+                            .get().getName()
+                    );
+                },
+                () -> {
+                    // comprobar que el user1 existe en el banco
+                    // Dos formas de hacer la misma comprobacion
+                    assertTrue(bank.getAccounts().stream()
+                            .filter(c -> c.getName().equals("User1"))
+                            .findFirst().isPresent());
+                },
+                () -> {
+                    assertTrue(bank.getAccounts().stream()
+                            .anyMatch(c -> c.getName().equals("User2")));
 
-        assertEquals(2, bank.getAccounts().size());
-        assertEquals("Imagic Bank", account1.getBank().getName());
-
-        // comprobar que el user1 existe en el banco
-        assertEquals("User1", bank.getAccounts().stream()
-                .filter(c -> c.getName().equals("User1"))
-                .findFirst()
-                .get().getName()
+                }
         );
-
-        // Dos formas de hacer la misma comprobacion
-        assertTrue(bank.getAccounts().stream()
-                .filter(c -> c.getName().equals("User1"))
-                .findFirst().isPresent());
-
-        assertTrue(bank.getAccounts().stream()
-                .anyMatch(c -> c.getName().equals("User2")));
     }
 }
