@@ -18,9 +18,12 @@ class AccountTest {
         String expectedResult = "Juan Antonio";
         String actualResult = account.getName();
 
-        assertEquals(expectedResult, actualResult);
+        assertNotNull(actualResult, () -> "The account can not be null");
 
-        assertTrue(actualResult.equals("Juan Antonio"));
+        assertEquals(expectedResult, actualResult, () -> "Account name is not as expected. Expected name: "
+                + expectedResult + ", result: " + actualResult);
+
+        assertTrue(actualResult.equals("Juan Antonio"), () -> "Expected result must be the same as actual result");
     }
 
     @Test
