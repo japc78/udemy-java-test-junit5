@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
+
 // Para indicar el ciclo de vida de la clase, en estes caso es se indica por clase,
 // por lo que solo habrá una sola instancia de la clase test para todos los métodos.
 // No es muy recomendable.
@@ -240,5 +242,31 @@ class AccountTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "dev")
     void onlyDevEnvironment() {
+    }
+
+    @Test
+    void testAccountBalanceWithAssume() {
+        boolean isDevEnvironment = "dev".equals(System.getProperty("ENV"));
+
+        // Deshabilita el test si no se cumple
+        assumeTrue(isDevEnvironment);
+
+        assertEquals(1000.12345, account.getBalance().doubleValue());
+        assertFalse(account.getBalance().compareTo(BigDecimal.ZERO) < 0);
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @Test
+    void testAccountBalanceWithAssumingThat() {
+        boolean isDevEnvironment = "pro".equals(System.getProperty("ENV"));
+
+        // Solo ejecuta estos metodos si se cumple
+        assumingThat(isDevEnvironment, () -> {
+            assertEquals(1000.12345, account.getBalance().doubleValue());
+            assertFalse(account.getBalance().compareTo(BigDecimal.ZERO) < 0);
+        });
+
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+
     }
 }
