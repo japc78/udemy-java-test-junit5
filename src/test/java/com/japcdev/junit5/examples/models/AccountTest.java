@@ -2,8 +2,11 @@ package com.japcdev.junit5.examples.models;
 
 import com.japcdev.junit5.examples.exceptions.InsufficientBalanceException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 // Para indicar el ciclo de vida de la clase, en estes caso es se indica por clase,
@@ -149,5 +152,93 @@ class AccountTest {
                 () -> assertTrue(bank.getAccounts().stream()
                         .anyMatch(c -> c.getName().equals("User2")))
         );
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    void testOnlyWindows() {
+
+    }
+
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void testOnlyLinuxMac() {
+
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void noWindows() {
+
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    void onlyJDK8() {
+
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_15)
+    void onlyJDK15() {
+        
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_15)
+    void noJDK15() {
+
+    }
+
+    @Test
+    void printSystemProperties() {
+        Properties properties = System.getProperties();
+        properties.forEach((key, value) -> System.out.println(key + ": " + value));
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "os.name", matches = "Windows 10")
+    void onlyWindows10() {
+
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "java.version", matches = "15.0.2")
+    void onlyJavaVersion() {
+
+    }
+
+    @Test
+    @DisabledIfSystemProperty(named = "sun.arch.data.model", matches = "64")
+    void onlyOS32bit() {
+
+    }
+
+    @Test
+    @EnabledIfSystemProperty(named = "ENV", matches = "dev")
+    void onlyDev() {
+    }
+
+    @Test
+    void printEnvironmentVariables() {
+        Map<String, String> getenv = System.getenv();
+        getenv.forEach((key, value) -> System.out.println(key + ": " + value));
+
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "JAVA_HOME", matches = ".*jdk-8.0.282.8-hotspot.*")
+    void javaHome() {
+
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS:", matches = "4")
+    void numberOfProcessors() {
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "dev")
+    void onlyDevEnvironment() {
     }
 }
