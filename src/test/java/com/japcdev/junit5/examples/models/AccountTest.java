@@ -118,7 +118,7 @@ class AccountTest {
     }
 
     @Nested
-    class AccountOpertations {
+    class AccountOperations {
         @Test
         void testDebitAccount() {
             account.debit(new BigDecimal("100"));
@@ -149,6 +149,21 @@ class AccountTest {
 
             assertEquals("1000.12345", account2.getBalance().toPlainString());
             assertEquals("3000", account1.getBalance().toPlainString());
+        }
+
+        @DisplayName("Repeat Test")
+        @RepeatedTest(value = 5, name = "Custom msg: {displayName} {currentRepetition} de {totalRepetitions}")
+        void testDebitAccountRepeat(RepetitionInfo info) {
+
+            if (info.getCurrentRepetition() == 3) {
+                System.out.println("Pass repetition: " + info.getCurrentRepetition());
+            }
+            account.debit(new BigDecimal("100"));
+
+            assertNotNull(account.getBalance());
+            assertEquals(900, account.getBalance().intValue());
+
+            assertEquals("900.12345", account.getBalance().toPlainString());
         }
     }
 
