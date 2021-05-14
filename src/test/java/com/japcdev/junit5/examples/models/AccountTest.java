@@ -1,18 +1,42 @@
 package com.japcdev.junit5.examples.models;
 
 import com.japcdev.junit5.examples.exceptions.InsufficientBalanceException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+// Para indicar el ciclo de vida de la clase, en estes caso es se indica por clase,
+// por lo que solo habrá una sola instancia de la clase test para todos los métodos.
+// No es muy recomendable.
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
+    private Account account;
+
+    @BeforeAll
+    static void beforeAll() {
+        System.out.println("Test init - class");
+    }
+
+    @AfterAll
+    static void afterAll() {
+        System.out.println("Test final - class");
+    }
+
+    @BeforeEach
+    void initTest() {
+        System.out.println("Init test");
+        this.account = new Account("Juan Antonio", new BigDecimal("1000.12345"));
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.out.println("Finally method");
+    }
 
     @Test
+    @DisplayName("Testing the account name")
     void testNameAccount() {
-        Account account = new Account("Juan Antonio", new BigDecimal("1500.32456"));
 //        account.setName("Juan Antonio");
 
         String expectedResult = "Juan Antonio";
@@ -27,8 +51,8 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("Testing the account balance, non-null, greater than zero")
     void testAccountBalance() {
-        Account account = new Account("Juan Antonio", new BigDecimal("1000.12345"));
         assertEquals(1000.12345, account.getBalance().doubleValue());
 
         // Dos formas para comprobar que el saldo es mayor que cero.
@@ -37,6 +61,7 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("Testing references to be equal with the equals method")
     void testAccountRef() {
         Account account1 = new Account("Test1", new BigDecimal("9000.00007"));
         Account account2 = new Account("Test1", new BigDecimal("9000.00007"));
@@ -47,26 +72,23 @@ class AccountTest {
 
     @Test
     void testDebitAccount() {
-        Account account = new Account("test", new BigDecimal("500.00"));
-
         account.debit(new BigDecimal("100"));
 
         assertNotNull(account.getBalance());
-        assertEquals(400, account.getBalance().intValue());
+        assertEquals(900, account.getBalance().intValue());
 
-        assertEquals("400.00", account.getBalance().toPlainString());
+        assertEquals("900.12345", account.getBalance().toPlainString());
     }
 
     @Test
     void testCreditAccount() {
-        Account account = new Account("test", new BigDecimal("500.00"));
 
         account.credit(new BigDecimal("100"));
 
         assertNotNull(account.getBalance());
-        assertEquals(600, account.getBalance().intValue());
+        assertEquals(1100, account.getBalance().intValue());
 
-        assertEquals("600.00", account.getBalance().toPlainString());
+        assertEquals("1100.12345", account.getBalance().toPlainString());
     }
 
     @Test
@@ -97,6 +119,7 @@ class AccountTest {
     }
 
     @Test
+    @DisplayName("Testing account and bank relationships with assertAll")
     void testRelationBankAccount() {
         Account account1 = new Account("User1", new BigDecimal("2500"));
         Account account2 = new Account("User2", new BigDecimal("1500.12345"));
