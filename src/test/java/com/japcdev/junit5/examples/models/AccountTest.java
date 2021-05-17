@@ -54,8 +54,10 @@ class AccountTest {
         }
 
         @Test
-        @DisplayName("Name")
-        void testNameAccount() {
+        @DisplayName("The Name")
+        void testNameAccount(TestInfo testInfo, TestReporter testReporter) {
+            System.out.println("running:  " + testInfo.getDisplayName() + " " + testInfo.getTestMethod().orElse(null).getName() + " " +
+                    testInfo.getTags()) ;
 //        account.setName("Juan Antonio");
 
             String expectedResult = "Juan Antonio";
