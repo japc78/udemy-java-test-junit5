@@ -7,10 +7,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -412,5 +414,27 @@ class AccountTest {
 
     private static List<String> montoList() {
         return Arrays.asList("100", "200", "300", "500", "700", "1000");
+    }
+
+    @Nested
+    class TimeOutTest {
+        @Test
+        @Timeout(1)
+        void testTimeOut() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(2);
+        }
+
+        @Test
+        @Timeout(value=500, unit = TimeUnit.MILLISECONDS)
+        void testTimeOut2() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(501);
+        }
+
+        @Test
+        void testTimeWithAssertions() {
+            assertTimeout(Duration.ofSeconds(1), () -> {
+                TimeUnit.MILLISECONDS.sleep(500);
+            });
+        }
     }
 }
