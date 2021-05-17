@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assumptions.*;
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountTest {
     private Account account;
+    private TestInfo testInfo;
+    private TestReporter testReporter;
 
     @BeforeAll
     static void beforeAll() {
@@ -34,7 +36,11 @@ class AccountTest {
     }
 
     @BeforeEach
-    void initTest() {
+    void initTest(TestInfo testInfo, TestReporter testReporter) {
+        this.testInfo = testInfo;
+        this.testReporter = testReporter;
+        System.out.println("running:  " + testInfo.getDisplayName() + " " + testInfo.getTestMethod().orElse(null).getName() + " " +
+                testInfo.getTags()) ;
         this.account = new Account("Juan Antonio", new BigDecimal("1000.12345"));
     }
 
@@ -55,10 +61,15 @@ class AccountTest {
 
         @Test
         @DisplayName("The Name")
-        void testNameAccount(TestInfo testInfo, TestReporter testReporter) {
-            System.out.println("running:  " + testInfo.getDisplayName() + " " + testInfo.getTestMethod().orElse(null).getName() + " " +
-                    testInfo.getTags()) ;
+        void testNameAccount() {
+
 //        account.setName("Juan Antonio");
+
+            testReporter.publishEntry("Running with TestReporter: " + testInfo.getTestMethod().orElse(null).getName()) ;
+
+            if (testInfo.getTags().contains("param")) {
+                System.out.println("Check prueba parametrizada");
+            }
 
             String expectedResult = "Juan Antonio";
             String actualResult = account.getName();
