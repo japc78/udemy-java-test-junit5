@@ -3,10 +3,15 @@ package com.japcdev.junit5.examples.models;
 import com.japcdev.junit5.examples.exceptions.InsufficientBalanceException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -313,5 +318,81 @@ class AccountTest {
             assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
 
         }
+    }
+
+    @Nested
+    class AccountParameterizedTest {
+        @ParameterizedTest(name = "Test with String {index}, value monto: {0} - {argumentsWithNames} ")
+        @ValueSource(strings = {"100", "200", "300", "500", "700", "1000"})
+        void testDebitAccountWithSourceString(String monto) {
+            account.debit(new BigDecimal(monto));
+
+            assertNotNull(account.getBalance());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+        @ValueSource(doubles = {100, 200, 300, 500, 700, 1000})
+        void testDebitAccountSourceInt(double monto) {
+            account.debit(new BigDecimal(monto));
+
+            assertNotNull(account.getBalance());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+        @CsvSource({"1,100", "2,200", "3,300", "4,500", "5,700", "6,1000"})
+        void testDebitAccountSourceCSV(String index, String monto) {
+            System.out.println(index + " -> " + monto);
+            account.debit(new BigDecimal(monto));
+            assertNotNull(account.getBalance());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+        @CsvSource({"200,100,pepe,pepe", "250,200,maria,Maria", "299,300,Pepa,Pepa", "400,500,Juan,Juan", "750,700,Antonio,Antonio", "1000,1000,Juan Antonio, Juan Antonio"})
+        void testDebitAccountSourceCSVWith2Arg(String balance, String monto, String nameExpected, String nameActual) {
+            System.out.println(balance + " -> " + monto);
+            account.setBalance(new BigDecimal(balance));
+            account.setName(nameExpected);
+
+            assertEquals(nameExpected, nameActual);
+            assertNotNull(account.getBalance());
+            assertNotNull(account.getName());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+        @CsvFileSource(resources = "/data.csv")
+        void testDebitAccountSourceCSVFile(String monto) {
+            account.debit(new BigDecimal(monto));
+            assertNotNull(account.getBalance());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+
+        @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+        @CsvFileSource(resources = "/data2.csv")
+        void testDebitAccountSourceCSVFile2(String balance, String monto, String nameExpected, String nameActual) {
+            account.setBalance(new BigDecimal(balance));
+            account.setName(nameExpected);
+
+            assertEquals(nameExpected, nameActual);
+            assertNotNull(account.getBalance());
+            assertNotNull(account.getName());
+            assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+        }
+    }
+
+    // Los metodos debe de ser estaticos, y por tanto, el test no puede estar dentro de una clase nested.
+    @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
+    @MethodSource("montoList")
+    void testDebitAccountSourceMethod(String monto) {
+        account.debit(new BigDecimal(monto));
+        assertNotNull(account.getBalance());
+        assertTrue(account.getBalance().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    private static List<String> montoList() {
+        return Arrays.asList("100", "200", "300", "500", "700", "1000");
     }
 }
