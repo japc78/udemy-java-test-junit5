@@ -38,6 +38,7 @@ class AccountTest {
         this.account = new Account("Juan Antonio", new BigDecimal("1000.12345"));
     }
 
+    @Tag("account")
     @Nested
     @DisplayName("Testing account attributes")
     class AccountTestNameAndBank {
@@ -124,6 +125,7 @@ class AccountTest {
 
     @Nested
     class AccountOperations {
+        @Tag("account")
         @Test
         void testDebitAccount() {
             account.debit(new BigDecimal("100"));
@@ -134,6 +136,7 @@ class AccountTest {
             assertEquals("900.12345", account.getBalance().toPlainString());
         }
 
+        @Tag("account")
         @Test
         void testCreditAccount() {
 
@@ -144,7 +147,7 @@ class AccountTest {
 
             assertEquals("1100.12345", account.getBalance().toPlainString());
         }
-
+        @Tag("bank")
         @Test
         void testTransferMoney() {
             Account account1 = new Account("User1", new BigDecimal("2500"));
@@ -321,6 +324,7 @@ class AccountTest {
     }
 
     @Nested
+    @Tag("param")
     class AccountParameterizedTest {
         @ParameterizedTest(name = "Test with String {index}, value monto: {0} - {argumentsWithNames} ")
         @ValueSource(strings = {"100", "200", "300", "500", "700", "1000"})
@@ -384,6 +388,7 @@ class AccountTest {
     }
 
     // Los metodos debe de ser estaticos, y por tanto, el test no puede estar dentro de una clase nested.
+    @Tag("param")
     @ParameterizedTest(name = "Test with Int {index}, value monto: {0} - {argumentsWithNames} ")
     @MethodSource("montoList")
     void testDebitAccountSourceMethod(String monto) {
